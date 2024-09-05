@@ -1,10 +1,10 @@
 ###### Outline of Trips program
-import openpyxl
+# import openpyxl
 
-wb = openpyxl.load_workbook('Excel-Documents\\WBManifestTable_1706103354202.xlsx')
-sheet = wb['FedEx Air Ops Workbench Report']
+# wb = openpyxl.load_workbook('Excel-Documents\\WBManifestTable_1706103354202.xlsx')
+# sheet = wb['FedEx Air Ops Workbench Report']
 
-tuple(sheet['B5':'E46'])
+# tuple(sheet['B5':'E46'])
 
 
 # Gets ULD number from the Excel sheet
@@ -14,7 +14,7 @@ def getCanNum(cans):
     for can in cans:
         arrayOfCans.append(can.value)
     
-    print(arrayOfCans)
+    # print(arrayOfCans)
     return arrayOfCans
 
 # Cut the can number to the type of can which is always the first 3 characters
@@ -55,7 +55,7 @@ def getWeight(weightOfCans):
     
     return sumTotal
 
-def getDestCans(dest):
+def getDestCans(dest, sheet):
     destCoords = []
 
     for rowOfCellObjects in sheet['E5':'E46']:
@@ -67,9 +67,20 @@ def getDestCans(dest):
 
     return destCoords
 
+def getDestOptions(sheet):
+    destOptions = []
+
+    for rowOfCellObjects in sheet['E5':'E46']:
+        for cellObj in rowOfCellObjects:
+            if not destOptions.__contains__(cellObj.value) and cellObj.value:
+                destOptions.append(cellObj.value)
+    
+    # print(destOptions)
+    return destOptions
+
 # Main function
-def calcWeight(dest):
-    destCans = getDestCans(dest)
+def calcWeight(dest, sheet):
+    destCans = getDestCans(dest, sheet)
 
     weightCells = [sheet[f'D{num}'] for num in destCans]
 
@@ -88,8 +99,7 @@ def calcWeight(dest):
     return sumTotal
 
 # for a specific uld destination
-dest = input("For which destination do you seek?\n('FFTA', 'CVGA', 'LUKA')>>> ")
-# dest = 'cvgrt'
-upperDest = dest.upper()
+# dest = input("For which destination do you seek?\n('FFTA', 'CVGA', 'LUKA')>>> ")
+# upperDest = dest.upper()
 
-calcWeight(upperDest)
+# calcWeight(upperDest)
