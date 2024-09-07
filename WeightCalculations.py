@@ -30,19 +30,19 @@ def checkUldType(arrayOfCans):
 def weightOfCan(type):
     canWeight = 0
     if type == 'AAD':
-        canWeight = 500
+        canWeight = 573
     elif type == 'AMJ':
-        canWeight = 400
+        canWeight = 716
     elif type == 'TRK':
-        canWeight = 800
+        canWeight = 750
     elif type == 'AYY':
-        canWeight = 200
+        canWeight = 272
     elif type == 'PMC':
-        canWeight = 4
+        canWeight = 260
     elif type == 'AKE':
-        canWeight = 50
+        canWeight = 178
     elif type == 'AAX':
-        canWeight = 600
+        canWeight = 865
 
     return canWeight
 
