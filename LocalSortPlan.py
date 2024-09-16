@@ -1,7 +1,8 @@
+# not useable since outlook updated
 import win32com.client as win
 
 # To calculate the time variance of scheduled arival to actual arival
-
+print('check 0')
 ol = win.Dispatch('Outlook.Application')
 print('check 1')
 

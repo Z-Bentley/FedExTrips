@@ -1,8 +1,8 @@
 ###### Outline of Trips program
-# import openpyxl
+import openpyxl
 
-# wb = openpyxl.load_workbook('Excel-Documents\\WBManifestTable_1706103354202.xlsx')
-# sheet = wb['FedEx Air Ops Workbench Report']
+wb = openpyxl.load_workbook('Excel-Documents\\WBManifestTable_1706103354202.xlsx')
+sheet = wb['FedEx Air Ops Workbench Report']
 
 # tuple(sheet['B5':'E46'])
 
@@ -23,7 +23,8 @@ def checkUldType(arrayOfCans):
     
     for canNum in arrayOfCans:
         typesOfCans.append(canNum[:3])
-
+        
+    print(typesOfCans)
     return typesOfCans
 
 # Weights of each can
@@ -101,5 +102,5 @@ def calcWeight(dest, sheet):
 # for a specific uld destination
 # dest = input("For which destination do you seek?\n('FFTA', 'CVGA', 'LUKA')>>> ")
 # upperDest = dest.upper()
-
-# calcWeight(upperDest)
+upperDest = 'FFTA'
+calcWeight(upperDest, sheet)
