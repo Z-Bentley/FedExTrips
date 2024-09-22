@@ -103,4 +103,4 @@ def calcWeight(dest, sheet):
 # dest = input("For which destination do you seek?\n('FFTA', 'CVGA', 'LUKA')>>> ")
 # upperDest = dest.upper()
 upperDest = 'FFTA'
-calcWeight(upperDest, sheet)
+# calcWeight(upperDest, sheet)

@@ -93,4 +93,6 @@ cords = checkForSldOrMix()
 # getUlds(cords)
 # getDests(cords)
 # getWeights(cords)
-createDict()
+
+
+# createDict()
