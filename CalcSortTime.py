@@ -3,6 +3,7 @@
 
 import openpyxl
 from datetime import datetime
+import CustomizeExcel as CE
 
 filePath = 'Excel-Documents\\WBManifestTable_1706103354202.xlsx'
 wb = openpyxl.load_workbook(filePath)
@@ -69,41 +70,74 @@ def calcSortTimes(sheet, actualTimes):
         vari = subtractTimes(sch, act)
         sheet[cell] = vari
         # variances.append(vari)
+    
+    # Add border
+    CE.addBorder(sheet, 'A1:D4')
+
+    # Column size adjusted
+    cols = ['A', 'B', 'C', 'D']
+    for col in cols:
+        CE.adjustCol(sheet, col)
+
+def setRootCauseDelay(sheet, actuals):
+    # ???
+    sheet['F1'] = 'X'
+    sheet['G1'] = 'Late aircraft'
+    sheet['H1'] = 'X'
+    sheet['I1'] = 'Excess Minisort'
+
+    sheet['I3'] = f"""Plan = 6650lbs\n
+    Actual = {actuals[0]}\n
+    Plan = 655 pieces\n
+    Actual = {actuals[1]}"""
+
+    sheet['I3'] = 'Plan = 6650lbs'
+    sheet['I4'] = f'Actual = {actuals[0]}'
+    sheet['I5'] = 'Plan = 655 pieces'
+    sheet['I6'] = f'Actual = {actuals[1]}'
+
+    # Add Border
+    CE.addBorder(sheet, 'F1:I6')
+
+    # Column size adjusted
+    cols = ['F', 'G', 'H', 'I']
+    for col in cols:
+        CE.adjustCol(sheet, col)
 
 def outboundTruckRoutes(sheet, actualTrucks):
     # Truck Routes
-    sheet['A12'] = 'OXD02'
-    sheet['A13'] = 'CVG10'
-    sheet['A14'] = 'CVG03'
-    sheet['A15'] = 'FFT02'
-    sheet['A16'] = 'CVG06'
-    sheet['A17'] = 'OXD04'
-    sheet['A18'] = 'LUK01'
-    sheet['A19'] = 'CVG02'
-    sheet['A21'] = 'Docs LUK77/CVG77/OXD77FFT77'
-    sheet['A22'] = 'CVG78 (DNCA)'
-    sheet['A23'] = 'FFT41 (PDJA)'
+    kCells = ['K2', 'K3', 'K4', 'K5', 'K6', 'K7', 'K8', 'K9', 'K11', 'K12', 'K13']
+    truckRoutes = ['OXD02', 'CVG10', 'CVG03', 'FFT02', 'CVG06', 'OXD04', 'LUK01', 'CVG02', 'Docs LUK77/CVG77/OXD77FFT77', 'CVG78 (DNCA)', 'FFT41 (PDJA)']
+    for k, tr in zip(kCells, truckRoutes):
+        sheet[k] = tr
 
+    # Scheduled Times
     schTimes = ['06:35', '07:25', '06:45', '07:15', '06:55', '07:00', '07:10', '07:05', '06:30', '07:00', '07:20']
-    bCells = ['B12', 'B13', 'B14', 'B15', 'B16', 'B17', 'B18', 'B19', 'B21', 'B22', 'B23']
-
-    sheet['B11'] = 'Schedule'
-    for b, sch in zip(bCells, schTimes):
-        sheet[b] = sch
+    lCells = ['L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9', 'L11', 'L12', 'L13']
+    sheet['L1'] = 'Schedule'
+    for l, sch in zip(lCells, schTimes):
+        sheet[l] = sch
 
     # Actual Times
-    sheet['C11'] = 'Actual'
-    cCells = ['C12', 'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C21', 'C22', 'C23']
-    for c, at in zip(cCells, actualTrucks):
-        sheet[c] = at
+    sheet['M1'] = 'Actual'
+    mCells = ['M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M11', 'M12', 'M13']
+    for m, at in zip(mCells, actualTrucks):
+        sheet[m] = at
 
     # Variance Calcs
-    sheet['D11'] = 'Variance'
-    dCells = ['D12', 'D13', 'D14', 'D15', 'D16', 'D17', 'D18', 'D19', 'D21', 'D22', 'D23']
-    for d, scht, tru in zip(dCells, schTimes, actualTrucks):
+    sheet['N1'] = 'Variance'
+    nCells = ['N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N9', 'N11', 'N12', 'N13']
+    for n, scht, tru in zip(nCells, schTimes, actualTrucks):
         vari = subtractTimes(scht, tru)
-        sheet[d] = vari
+        sheet[n] = vari
 
+    # Adding Border
+    CE.addBorder(sheet, 'K1:N13')
+
+    # Column size adjusted
+    cols = ['K', 'L', 'M', 'N']
+    for col in cols:
+        CE.adjustCol(sheet, col)
 
 
 # arrival = input('What is the Arrival time? (hh:mm)')
@@ -115,6 +149,8 @@ sortEnd = '07:10'
 actualTimes = [arrival, sortStart, sortEnd]
 calcSortTimes(sheet, actualTimes)
 
+actuals = ['10856', '924 116 of this was NCING']
+setRootCauseDelay(sheet, actuals)
 
 truckTimes = ['07:05', '07:25', '07:05', '07:22', '07:00', '07:22', '07:05', '07:25', '07:05', '07:20', '07:20']
 outboundTruckRoutes(sheet, truckTimes)
