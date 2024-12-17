@@ -123,24 +123,3 @@ def outboundTruckRoutes(filePath, sheet, schTimes, actualTrucks):
     cols = ['K', 'L', 'M', 'N']
     for col in cols:
         CE.adjustCol(sheet, col)
-
-
-# if 'sort_times' not in wb.sheetnames:
-#     sheet = wb.create_sheet("sort_times")
-# else:
-#     sheet = wb['sort_times']
-
-# localSchArrival = ['06:02', '06:26', '06:46']
-# actualTimes = ['06:29', '06:43', '07:10']
-# calcSortTimes(filePath, sheet, localSchArrival, actualTimes)
-
-# actuals = ['10856', '924 116 of this was NCING']
-# setRootCauseDelay(filePath, sheet, actuals)
-
-# schTimes = ['06:35', '07:25', '06:45', '07:15', '06:55', '07:00', '07:10', '07:05', '06:30', '07:00', '07:20']
-# truckTimes = ['09:05', '09:25', '09:05', '07:22', '07:00', '07:22', '07:05', '07:25', '07:05', '07:20', '07:20']
-# outboundTruckRoutes(filePath, sheet, schTimes, truckTimes)
-
-# Save the workbook (make sure the excel is closed)
-# wb.save(filePath)
-# print('Workbook has been saved!')
