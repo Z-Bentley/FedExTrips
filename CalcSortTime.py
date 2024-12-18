@@ -11,24 +11,13 @@ wb = openpyxl.load_workbook(filePath)
 # Time Subtraction
 def subtractTimes(time1, time2):
     format = '%H:%M'
+    
     t1 = datetime.strptime(time1, format)
     t2 = datetime.strptime(time2, format)
 
-    isNegative = False
-    if t2 >= t1:
-        difference = t2 - t1
-    else:
-        difference = t1 - t2
-        isNegative = True
-    
-    inMin = (difference.seconds // 60) % 60
+    difference = (t2 - t1).total_seconds() // 60
 
-    if inMin >= 0 and not isNegative:
-        inMin = str(inMin)
-        inMin = '+' + inMin
-    else:
-        inMin = str(inMin)
-        inMin = '-' + inMin
+    inMin = f"{difference:+.0f}"
 
     return inMin
 

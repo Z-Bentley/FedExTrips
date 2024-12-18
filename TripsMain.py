@@ -74,6 +74,9 @@ def subButton():
         copy_excel.copyExcel(filePath)
     except Exception as e:
         print(f"An error occurred: {e}")
+    finally:
+        wb.save(filePath)
+        print('Workbook has been saved!')
 
 # Setup window
 root = tk.Tk()
@@ -128,5 +131,5 @@ ttk.Button(root, text="Submit", command=subButton).grid(row=rowNum + 1, column=1
 root.mainloop()
 
 # # Save the workbook (make sure the excel is closed)
-wb.save(filePath)
-print('Workbook has been saved!')
+# wb.save(filePath)
+# print('Workbook has been saved!')

@@ -2,11 +2,6 @@ import win32com.client as win32
 import os
 
 def copyExcel(filePath):
-    """
-    Function to copy specific Excel ranges, ensuring formatting is preserved.
-    Args:
-        filePath (str): Full path to the Excel file.
-    """
     # Initialize Excel COM application
     excel = win32.Dispatch('Excel.Application')
     # excel.Visible = False  # Run Excel in the background
