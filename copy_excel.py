@@ -1,44 +1,71 @@
-import win32com.client as win32
 import os
+import win32com.client as win32
 
-def copyExcel(filePath):
-    # Initialize Excel COM application
-    excel = win32.Dispatch('Excel.Application')
-    # excel.Visible = False  # Run Excel in the background
+def initialize_excel():
+    """
+    Initializes and opens the Excel application.
+    Returns the Excel application instance.
+    """
+    try:
+        excel = win32.Dispatch('Excel.Application')
+        excel.Visible = False  # Keep Excel visible
+        print("Excel application initialized and visible.")
+        return excel
+    except Exception as e:
+        print(f"Failed to initialize Excel application: {e}")
+        return None
+
+def copyExcel(templatePath, excel):
+    """
+    Copies specific data ranges from the 'sort_times' sheet in the template Excel file
+    directly to the clipboard, retaining all formatting (e.g., borders, fonts, colors).
+    """
+    if not os.path.exists(templatePath):
+        print(f"Template file not found: {templatePath}")
+        return
 
     workbook = None
     try:
-        # Open the source workbook
-        workbook = excel.Workbooks.Open(filePath)
-        sheet = workbook.Sheets('sort_times')  # Ensure the sheet exists
+        # Open the workbook
+        workbook = excel.Workbooks.Open(templatePath, UpdateLinks=0, ReadOnly=True)
+        print(f"Workbook '{templatePath}' opened successfully.")
 
-        # Create a new workbook for copying data
-        new_workbook = excel.Workbooks.Add()
-        new_sheet = new_workbook.Sheets(1)
+        # Access the 'sort_times' sheet
+        sheet_name = 'sort_times'
+        if not any(sheet.Name == sheet_name for sheet in workbook.Sheets):
+            print(f"Sheet '{sheet_name}' not found in the workbook.")
+            return
+        sheet = workbook.Sheets(sheet_name)
+        print(f"Sheet '{sheet_name}' accessed successfully.")
 
-        # Copy and paste ranges with formatting
-        new_sheet.Cells(1, 1).Value = "Local Sort Plan:"
-        sheet.Range('A1:D4').Copy()
-        new_sheet.Range('A2').PasteSpecial(-4104)  # xlPasteAll
+        # Copy specific ranges directly to clipboard
+        print("Copying ranges with formatting...")
+        sheet.Range("A1:D4").Copy()  # Local Sort Plan
+        print("Local Sort Plan copied.")
+        sheet.Range("F1:I6").Copy()  # Root Cause of Delay
+        print("Root Cause of Delay copied.")
+        sheet.Range("K1:N13").Copy()  # Outbound Truck Routes
+        print("Outbound Truck Routes copied.")
 
-        new_sheet.Cells(7, 1).Value = "Root Cause of Delay:"
-        sheet.Range('F1:I6').Copy()
-        new_sheet.Range('A8').PasteSpecial(-4104)
-
-        new_sheet.Cells(15, 1).Value = "Outbound Truck Routes:"
-        sheet.Range('K1:N13').Copy()
-        new_sheet.Range('A16').PasteSpecial(-4104)
-
-        # Copy sheet to clipboard
-        new_sheet.UsedRange.Copy()
-        print("Copied data with formatting to clipboard. Paste it into your email.")
-
+        # Excel remains open until explicitly closed by the program
+        print("Data copied to clipboard. Excel remains open.")
     except Exception as e:
-        print(f"An error occurred in copyExcel: {e}")
+        print(f"An error occurred: {e}")
+    # finally:
+    #     if workbook:
+    #         try:
+    #             workbook.Close(False)
+    #             print("Original workbook closed.")
+    #         except Exception as e:
+    #             print(f"Failed to close workbook: {e}")
 
-    finally:
-        # Cleanup Excel
-        if workbook:
-            workbook.Close(False)
-        excel.Quit()
-        del excel
+def close_excel(excel):
+    """
+    Closes the Excel application if it is running.
+    """
+    if excel:
+        try:
+            excel.Quit()
+            print("Excel application closed.")
+        except Exception as quit_error:
+            print(f"Error closing Excel: {quit_error}")
