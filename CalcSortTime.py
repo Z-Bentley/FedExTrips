@@ -10,130 +10,97 @@ import CustomizeExcel as CE
 
 # Time Subtraction
 def subtractTimes(time1, time2):
-    format = '%H:%M'
-    
-    t1 = datetime.strptime(time1, format)
-    t2 = datetime.strptime(time2, format)
+    time_format = '%H:%M'
 
-    difference = (t2 - t1).total_seconds() // 60
+    # Parse the input times
+    t1 = datetime.strptime(time1, time_format)
+    t2 = datetime.strptime(time2, time_format)
 
-    inMin = f"{difference:+.0f}"
+    # Calculate the difference in minutes
+    difference = int((t2 - t1).total_seconds() / 60)
 
-    return inMin
+    # Format the result as a string with "+" or "-"
+    return f"+{difference}" if difference >= 0 else f"{difference}"
 
 # Local Sort Plan
 def calcSortTimes(sheet, schTimes, actualTimes):
     try:
         # Set Column Headings
-        sheet['A1'] = 'Flight 1460'
-        sheet['B1'] = 'Schedule'
-        sheet['C1'] = 'Actual' 
-        sheet['D1'] = 'Variance'
+        sheet.Cells(1, 1).Value = 'Flight 1460'
+        sheet.Cells(1, 2).Value = 'Schedule'
+        sheet.Cells(1, 3).Value = 'Actual'
+        sheet.Cells(1, 4).Value = 'Variance'
 
         # Set Row Headings
-        sheet['A2'] = 'Aircraft Arrival'
-        sheet['A3'] = 'Sort Time'
-        sheet['A4'] = 'Sort End'
+        sheet.Cells(2, 1).Value = 'Aircraft Arrival'
+        sheet.Cells(3, 1).Value = 'Sort Time'
+        sheet.Cells(4, 1).Value = 'Sort End'
 
-        # Set Scheduled Times
-        cells = ['B2', 'B3', 'B4']
-        for bCell, time in zip(cells, schTimes):
-            sheet[bCell] = time
-        
-        # Set Actual Times
-        cells = ['C2', 'C3', 'C4']
-        for c, t in zip(cells, actualTimes):
-            sheet[c] = t
-        
-        # Time Math
-        variCells = ['D2', 'D3', 'D4']
-        for sch, act, cell in zip(schTimes, actualTimes, variCells):
-            vari = subtractTimes(sch, act)
-            sheet[cell] = vari
-        
-        # Add border
+        # Populate Data and Variance
+        for i in range(len(schTimes)):
+            row = i + 2
+            sheet.Cells(row, 2).Value = schTimes[i]  # Schedule
+            sheet.Cells(row, 3).Value = actualTimes[i]  # Actual
+            
+            # Variance as a string
+            variance = subtractTimes(schTimes[i], actualTimes[i])
+            sheet.Cells(row, 4).Value = f"'{variance}"
+
+        # Apply borders to the range
         CE.addBorder(sheet, 'A1:D4')
-
-        # Column size adjusted
-        cols = ['A', 'B', 'C', 'D']
-        for col in cols:
-            CE.adjustCol(sheet, col)
+        print("Local Sort Plan calculated and set.")
     except Exception as e:
         print(f"Error in calcSortTimes: {e}")
 
 def setRootCauseDelay(sheet, actuals):
     try:
-        # ???
-        sheet['F1'] = 'X'
-        sheet['G1'] = 'Late aircraft'
-        sheet['H1'] = 'X'
-        sheet['I1'] = 'Excess Minisort'
+        # Set Root Cause Delay Data
+        sheet.Cells(7, 1).Value = 'X'
+        sheet.Cells(8, 1).Value = 'Late aircraft'
+        sheet.Cells(9, 1).Value = 'X'
+        sheet.Cells(10, 1).Value = 'Excess Minisort'
 
-        sheet['I3'] = 'Plan = 6650lbs'
-        sheet['I4'] = f'Actual = {actuals[0]}'
-        sheet['I5'] = 'Plan = 655 pieces'
-        sheet['I6'] = f'Actual = {actuals[1]}'
+        sheet.Cells(9, 4).Value = "Plan = 6650lbs"
+        sheet.Cells(10, 4).Value = f"Actual = {actuals[0]}"
+        sheet.Cells(11, 4).Value = "Plan = 655 pieces"
+        sheet.Cells(12, 4).Value = f"Actual = {actuals[1]}"
 
-        # Add Border
-        CE.addBorder(sheet, 'F1:I6')
-
-        # Column size adjusted
-        cols = ['F', 'G', 'H', 'I']
-        for col in cols:
-            CE.adjustCol(sheet, col)
+        # Apply borders to the range
+        CE.addBorder(sheet, 'A7:D12')
+        print("Root Cause Delay set.")
     except Exception as e:
         print(f"Error in setRootCauseDelay: {e}")
 
 def outboundTruckRoutes(sheet, schTimes, actualTrucks):
     try:
-        # Truck Routes
-        kCells = ['K2', 'K3', 'K4', 'K5', 'K6', 'K7', 'K8', 'K9', 'K11', 'K12', 'K13']
-        truckRoutes = ['OXD02', 'CVG10', 'CVG03', 'FFT02', 'CVG06', 'OXD04', 'LUK01', 'CVG02', 'Docs LUK77/CVG77/OXD77FFT77', 'CVG78 (DNCA)', 'FFT41 (PDJA)']
-        for k, tr in zip(kCells, truckRoutes):
-            sheet[k] = tr
+        # Truck Routes and Data
+        truckRoutes = ['OXD02', 'CVG10', 'CVG03', 'FFT02', 'CVG06', 'OXD04', 
+                       'LUK01', 'CVG02', 'Docs LUK77/CVG77/OXD77FFT77', 
+                       'CVG78 (DNCA)', 'FFT41 (PDJA)']
 
-        # Scheduled Times
-        lCells = ['L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9', 'L11', 'L12', 'L13']
-        sheet['L1'] = 'Schedule'
-        for l, sch in zip(lCells, schTimes):
-            sheet[l] = sch
+        # Headers
+        sheet.Cells(15, 1).Value = "Truck Route"
+        sheet.Cells(15, 2).Value = "Schedule"
+        sheet.Cells(15, 3).Value = "Actual"
+        sheet.Cells(15, 4).Value = "Variance"
 
-        # Actual Times
-        sheet['M1'] = 'Actual'
-        mCells = ['M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M11', 'M12', 'M13']
-        for m, at in zip(mCells, actualTrucks):
-            sheet[m] = at
+        # Populate Data and Variance
+        for i in range(len(truckRoutes)):
+            row = i + 16
+            sheet.Cells(row, 1).Value = truckRoutes[i]  # Truck Route
+            sheet.Cells(row, 2).Value = schTimes[i]  # Schedule
+            sheet.Cells(row, 3).Value = actualTrucks[i]  # Actual
+            
+            # Variance as a string
+            variance = subtractTimes(schTimes[i], actualTrucks[i])
+            sheet.Cells(row, 4).Value = f"'{variance}"  # Add single quote to enforce string
 
-        # Variance Calcs
-        sheet['N1'] = 'Variance'
-        nCells = ['N2', 'N3', 'N4', 'N5', 'N6', 'N7', 'N8', 'N9', 'N11', 'N12', 'N13']
-        for n, scht, tru in zip(nCells, schTimes, actualTrucks):
-            vari = subtractTimes(scht, tru)
-            sheet[n] = vari
-
-        # Adding Border
-        CE.addBorder(sheet, 'K1:N13')
-
-        # Column size adjusted
-        cols = ['K', 'L', 'M', 'N']
-        for col in cols:
-            CE.adjustCol(sheet, col)
+        # Apply borders to the range
+        CE.addBorder(sheet, 'A15:D27')
+        print("Outbound Truck Routes set.")
     except Exception as e:
         print(f"Error in outboundTruckRoutes: {e}")
 
-# def runExample():
-#     sheet = "Excel-Documents\\Sort_Time.xlsx"
-
-#     scheduledSort = ["06:02", "06:26", "06:46"]
-#     actualArrival = ["06:46", "06:46", "06:46"]
-
-#     truckRoutes = ['OXD02', 'CVG10', 'CVG03', 'FFT02', 'CVG06', 'OXD04', 'LUK01', 'CVG02', 'Docs LUK77/CVG77/OXD77FFT77', 'CVG78 (DNCA)', 'FFT41 (PDJA)']
-#     schudeldTimes = ['06:35', '07:25', '06:45', '07:15', '06:55', '07:00', '07:10', '07:05', '06:30', '07:00', '07:20']
-#     actualTimes = ['09:05', '09:25', '09:05', '07:22', '07:00', '07:22', '07:05', '07:25', '07:05', '07:20', '07:20']
-    
-#     calcSortTimes(sheet, scheduledSort, actualArrival)
-#     setRootCauseDelay(sheet, ['10856', '924 116 of this was NCING'])
-#     outboundTruckRoutes(sheet, schudeldTimes, actualTimes)
-#     print('Run it')
-
-# runExample()
+# print(subtractTimes("06:30", "07:15"))  # Output: "+45"
+# print(subtractTimes("07:30", "06:45"))  # Output: "-45"
+# print(subtractTimes("06:30", "06:30"))  # Output: "+0"
