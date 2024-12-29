@@ -66,28 +66,60 @@ def browseFiles():
 
 # Process data and perform calculations
 def subButton():
-    global sortTimeSheet, templatePath, excel_app, workbook
+    global filePath, sortTimeSheet, templatePath, excel_app, workbook
 
     if sortTimeSheet is None:
         print("No file selected or sheet not created. Please select a file first.")
         return
 
-    # Submit Data
     data = submit_data()
+    fileSheet = None
     try:
-        # Perform calculations on the COM workbook/sheet
+        # Perform calculations on sortTimeSheet
+        print("Starting calculations on sortTimeSheet...")
         CalcSortTime.calcSortTimes(sortTimeSheet, data['localSchTimes'], data['localActTimes'])
         CalcSortTime.setRootCauseDelay(sortTimeSheet, ['10856', '924 116 of this was NCING'])
         CalcSortTime.outboundTruckRoutes(sortTimeSheet, data['outSchTimes'], data['outActTimes'])
+        CalcSortTime.aircraftStrikeBox(sortTimeSheet)
+        print("Calculations completed.")
 
-        # Save the workbook via COM
+        # Open user-selected file for weight calculations
+        print(f"Opening file for weight calculations: {filePath}")
+        fileSheet = excel_app.Workbooks.Open(filePath)
+        workBenchSheet = fileSheet.Sheets('FedEx Air Ops Workbench Report')
+        print("FedEx Air Ops Workbench Report sheet accessed.")
+
+        # Calculate weights
+        total_weight = WeightCalculations.calcWeight(workBenchSheet)
+        print(f"Total weight calculated: {total_weight}")
+        heavy_weight = WeightCalculations.calcWeight(workBenchSheet, 'CVGRT')
+        print(f"Heavyweight calculated: {heavy_weight}")
+
+        # Subtract as integers and format for display
+        express_weight = f"{int(total_weight.replace(',', '')) - int(heavy_weight.replace(',', '')):,}"
+        print(f"Express weight calculated: {express_weight}")
+
+        # Add summary comments to sortTimeSheet
+        CalcSortTime.setSummaryComments(sortTimeSheet, total_weight, heavy_weight, express_weight)
+        print("Summary comments added to sortTimeSheet.")
+
+        # Save the workbook
         workbook.Save()
         print("Workbook saved via Excel COM.")
 
-        # Copy data to clipboard using Excel
+        # Copy data to clipboard
         copy_excel.copyExcel(templatePath, excel_app)
+        print("Data copied to clipboard successfully.")
+
     except Exception as e:
-        print(f"An error occurred in submit_data: {e}")
+        print(f"An error occurred in subButton: {e}")
+    finally:
+        if fileSheet:
+            try:
+                fileSheet.Close(SaveChanges=False)
+                print("User file closed without saving changes.")
+            except Exception as close_error:
+                print(f"Error closing user file: {close_error}")
 
 # Setup window
 root = tk.Tk()

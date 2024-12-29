@@ -1,106 +1,86 @@
 ###### Outline of Trips program
 import openpyxl
 
-wb = openpyxl.load_workbook('Excel-Documents\\WBManifestTable_1706103354202.xlsx')
-sheet = wb['FedEx Air Ops Workbench Report']
-
-# tuple(sheet['B5':'E46'])
-
+# Dictionary for ULD weights
+ULD_WEIGHTS = {
+    'AAD': 573,
+    'AMJ': 716,
+    'TRK': 750,
+    'AYY': 272,
+    'PMC': 260,
+    'AKE': 178,
+    'AAX': 865
+}
 
 # Gets ULD number from the Excel sheet
 def getCanNum(cans):
-    arrayOfCans = []
+    return [can.value for can in cans]
 
-    for can in cans:
-        arrayOfCans.append(can.value)
-    
-    # print(arrayOfCans)
-    return arrayOfCans
 
-# Cut the can number to the type of can which is always the first 3 characters
+# Extracts the ULD type (first three characters)
 def checkUldType(arrayOfCans):
-    typesOfCans = []
-    
-    for canNum in arrayOfCans:
-        typesOfCans.append(canNum[:3])
-        
-    print(typesOfCans)
-    return typesOfCans
+    return [can[:3] for can in arrayOfCans if can]
 
-# Weights of each can
+
+# Gets the weight of a ULD type
 def weightOfCan(type):
-    canWeight = 0
-    if type == 'AAD':
-        canWeight = 573
-    elif type == 'AMJ':
-        canWeight = 716
-    elif type == 'TRK':
-        canWeight = 750
-    elif type == 'AYY':
-        canWeight = 272
-    elif type == 'PMC':
-        canWeight = 260
-    elif type == 'AKE':
-        canWeight = 178
-    elif type == 'AAX':
-        canWeight = 865
+    return ULD_WEIGHTS.get(type, 0)  # Defaults to 0 if type is unknown
 
-    return canWeight
 
+# Sums weights from a list of cells
 def getWeight(weightOfCans):
-    sumTotal = 0
+    return sum(int(cell.value) for cell in weightOfCans if cell.value)
 
-    for cell in weightOfCans:
-        if cell.value:
-            sumTotal += int(cell.value)
-    
-    return sumTotal
 
+# Finds rows corresponding to the specified destination in column E
 def getDestCans(dest, sheet):
     destCoords = []
-
-    for rowOfCellObjects in sheet['E5':'E46']:
-        for cellObj in rowOfCellObjects:
-            if cellObj.value == dest:
-                rowNum = cellObj.coordinate[1:]
-
-                destCoords.append(rowNum)
-
+    for row in sheet.iter_rows(min_row=5, max_row=sheet.max_row, min_col=5, max_col=5):
+        for cell in row:
+            if cell.value == dest:
+                destCoords.append(cell.row)
     return destCoords
 
-def getDestOptions(sheet):
-    destOptions = []
 
-    for rowOfCellObjects in sheet['E5':'E46']:
-        for cellObj in rowOfCellObjects:
-            if not destOptions.__contains__(cellObj.value) and cellObj.value:
-                destOptions.append(cellObj.value)
-    
-    # print(destOptions)
-    return destOptions
+# Gets all unique destination options from column E
+def getDestOptions(sheet):
+    destOptions = set()
+    for row in sheet.iter_rows(min_row=5, max_row=sheet.max_row, min_col=5, max_col=5):  # Column E is the 5th column
+        for cell in row:
+            if cell.value:
+                destOptions.add(cell.value)
+    return list(destOptions)
+
 
 # Main function
-def calcWeight(dest, sheet):
-    destCans = getDestCans(dest, sheet)
+def calcWeight(sheet, dest=None):
+    total_weight = 0
 
-    weightCells = [sheet[f'D{num}'] for num in destCans]
+    try:
+        # Get the total number of rows in the sheet
+        num_rows = sheet.UsedRange.Rows.Count
 
-    sumTotal = getWeight(weightCells)
-    print(f'With can weight, the total weight of freight is {sumTotal}')
+        # Iterate through the rows
+        for row in range(5, num_rows + 1):  # Assuming data starts at row 5
+            dest_cell = sheet.Cells(row, 5).Value  # Column E
+            weight_cell = sheet.Cells(row, 4).Value  # Column D
 
-    canNumCells = [sheet[f'B{num}'] for num in destCans]
-    cantypes = getCanNum(canNumCells)
+            # Check if the destination matches (if provided) and add weight
+            if weight_cell:
+                if dest is None or dest_cell == dest:
+                    total_weight += int(weight_cell)
 
-    ulds = checkUldType(cantypes)
+    except Exception as e:
+        print(f"Error in calcWeight: {e}")
 
-    for uld in ulds:
-        sumTotal -= weightOfCan(uld)
-    
-    print(f'After complicated math here is the total freight weight without those pesky cans: {sumTotal}')
-    return sumTotal
+    # Format the weight with commas
+    return f"{total_weight:,}"
+
+
 
 # for a specific uld destination
-# dest = input("For which destination do you seek?\n('FFTA', 'CVGA', 'LUKA')>>> ")
-# upperDest = dest.upper()
-upperDest = 'FFTA'
-# calcWeight(upperDest, sheet)
+# wb = openpyxl.load_workbook('Excel-Documents\\WBManifestTable_1706103354202.xlsx')
+# sheet = wb['FedEx Air Ops Workbench Report']
+# upperDest = 'CVGRT'
+# print(calcWeight(sheet))
+# print(calcWeight(sheet, upperDest))

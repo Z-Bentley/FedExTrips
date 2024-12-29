@@ -59,17 +59,27 @@ def copyExcel(templatePath, excel):
         # Local Sort Plan
         temp_sheet.Cells(1, 1).Value = "Local Sort Plan:"
         sheet.Range("A1:D4").Copy()
-        temp_sheet.Range("A2").PasteSpecial(Paste=-4104)  # Paste with formatting
+        temp_sheet.Range("A2").PasteSpecial(Paste=-4104)
 
         # Root Cause of Delay
         temp_sheet.Cells(7, 1).Value = "Root Cause of Delay:"
         sheet.Range("A7:D12").Copy()
-        temp_sheet.Range("A8").PasteSpecial(Paste=-4104)  # Paste with formatting
+        temp_sheet.Range("A8").PasteSpecial(Paste=-4104)
 
         # Outbound Truck Routes
         temp_sheet.Cells(15, 1).Value = "Outbound Truck Routes:"
         sheet.Range("A15:D26").Copy()
-        temp_sheet.Range("A16").PasteSpecial(Paste=-4104)  # Paste with formatting
+        temp_sheet.Range("A16").PasteSpecial(Paste=-4104)
+
+        # Aircraft Strike Box
+        temp_sheet.Cells(31, 1).Value = "Aircraft Strike"
+        sheet.Range("A31:B32").Copy()
+        temp_sheet.Range("A32").PasteSpecial(Paste=-4104)
+
+        # Other Summary Comments
+        temp_sheet.Cells(36, 1).Value = "Other Summary Comments"
+        sheet.Range("A36:B38").Copy()
+        temp_sheet.Range("A37").PasteSpecial(Paste=-4104)
 
         # Copy the entire aggregated range to clipboard
         temp_sheet.UsedRange.Copy()

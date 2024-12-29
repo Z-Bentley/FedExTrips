@@ -4,6 +4,7 @@
 import openpyxl
 from datetime import datetime
 import CustomizeExcel as CE
+import WeightCalculations
 
 # filePath = 'Excel-Documents\\Sort_Time.xlsx'
 # wb = openpyxl.load_workbook(filePath)
@@ -56,9 +57,9 @@ def setRootCauseDelay(sheet, actuals):
     try:
         # Set Root Cause Delay Data
         sheet.Cells(7, 1).Value = 'X'
-        sheet.Cells(8, 1).Value = 'Late aircraft'
-        sheet.Cells(9, 1).Value = 'X'
-        sheet.Cells(10, 1).Value = 'Excess Minisort'
+        sheet.Cells(7, 2).Value = 'Late aircraft'
+        sheet.Cells(7, 3).Value = 'X'
+        sheet.Cells(7, 4).Value = 'Excess Minisort'
 
         sheet.Cells(9, 4).Value = "Plan = 6650lbs"
         sheet.Cells(10, 4).Value = f"Actual = {actuals[0]}"
@@ -96,10 +97,38 @@ def outboundTruckRoutes(sheet, schTimes, actualTrucks):
             sheet.Cells(row, 4).Value = f"'{variance}"  # Add single quote to enforce string
 
         # Apply borders to the range
-        CE.addBorder(sheet, 'A15:D27')
+        CE.addBorder(sheet, 'A15:D26')
         print("Outbound Truck Routes set.")
     except Exception as e:
         print(f"Error in outboundTruckRoutes: {e}")
+
+def aircraftStrikeBox(sheet):
+    try:
+        # Set Aircraft Strike Box
+        sheet.Cells(30, 1).Value = "Aircraft Strike"
+        sheet.Cells(31, 1).Value = 'X'
+        sheet.Cells(31, 2).Value = 'No'
+        sheet.Cells(32, 1).Value = ''
+        sheet.Cells(32, 2).Value = 'Yes-explanation: '
+
+        # Add Border
+        CE.addBorder(sheet, 'A31:B32')
+    except Exception as e:
+        print(f"Error in aircraftStrikeBox: {e}")
+
+def setSummaryComments(sortSheet, total_weight, heavy_weight, express_weight):
+    try:
+        # Get weights
+        # total_weight = WeightCalculations.calcWeight(workbenchSheet)
+        # heavy_weight = WeightCalculations.calcWeight(workbenchSheet, 'CVGRT')
+        # express_weight = total_weight - heavy_weight
+
+        # Set the weights in Excel
+        sortSheet.Cells(36, 1).Value = f"Total payload = {total_weight}"
+        sortSheet.Cells(37, 1).Value = f"Heavyweight = {heavy_weight}"
+        sortSheet.Cells(38, 1).Value = f"Express = {express_weight}"
+    except Exception as e:
+        print(f"Error in aircraftStrikeBox: {e}")
 
 # print(subtractTimes("06:30", "07:15"))  # Output: "+45"
 # print(subtractTimes("07:30", "06:45"))  # Output: "-45"
