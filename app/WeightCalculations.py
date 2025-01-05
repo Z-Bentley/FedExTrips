@@ -1,5 +1,4 @@
 ###### Outline of Trips program
-import openpyxl
 
 # Dictionary for ULD weights
 ULD_WEIGHTS = {
@@ -75,12 +74,3 @@ def calcWeight(sheet, dest=None):
 
     # Format the weight with commas
     return f"{total_weight:,}"
-
-
-
-# for a specific uld destination
-# wb = openpyxl.load_workbook('Excel-Documents\\WBManifestTable_1706103354202.xlsx')
-# sheet = wb['FedEx Air Ops Workbench Report']
-# upperDest = 'CVGRT'
-# print(calcWeight(sheet))
-# print(calcWeight(sheet, upperDest))

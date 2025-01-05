@@ -1,10 +1,9 @@
 # win32 is unuseable with outlook so this will add the sort time
 # to the clipboard after calculating the given times
 
-import openpyxl
 from datetime import datetime
 import CustomizeExcel as CE
-import WeightCalculations
+import WeightCalculations as WeightCalculations
 
 # filePath = 'Excel-Documents\\Sort_Time.xlsx'
 # wb = openpyxl.load_workbook(filePath)
@@ -53,7 +52,7 @@ def calcSortTimes(sheet, schTimes, actualTimes):
     except Exception as e:
         print(f"Error in calcSortTimes: {e}")
 
-def setRootCauseDelay(sheet, actuals):
+def setRootCauseDelay(sheet):
     try:
         # Set Root Cause Delay Data
         sheet.Cells(7, 1).Value = 'X'
@@ -62,9 +61,9 @@ def setRootCauseDelay(sheet, actuals):
         sheet.Cells(7, 4).Value = 'Excess Minisort'
 
         sheet.Cells(9, 4).Value = "Plan = 6650lbs"
-        sheet.Cells(10, 4).Value = f"Actual = {actuals[0]}"
+        sheet.Cells(10, 4).Value = f"Actual = "
         sheet.Cells(11, 4).Value = "Plan = 655 pieces"
-        sheet.Cells(12, 4).Value = f"Actual = {actuals[1]}"
+        sheet.Cells(12, 4).Value = f"Actual = "
 
         # Apply borders to the range
         CE.addBorder(sheet, 'A7:D12')

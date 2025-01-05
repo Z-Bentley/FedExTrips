@@ -1,6 +1,6 @@
 # check for sld or mix cans
 import openpyxl
-import WeightCalculations as wCalc
+import app.WeightCalculations as wCalc
 
 wb = openpyxl.load_workbook('Excel-Documents\\WBManifestTable_1706103354202.xlsx')
 sheet = wb['FedEx Air Ops Workbench Report']

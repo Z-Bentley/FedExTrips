@@ -1,13 +1,14 @@
 # Library Imports
 import os
+import sys
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 
 # File Imports
-import WeightCalculations
-import CalcSortTime
-import copy_excel
+import WeightCalculations as WeightCalculations
+import CalcSortTime as CalcSortTime
+import copy_excel as copy_excel
 
 ##### Main file for running the Trips Program #####
 
@@ -25,6 +26,11 @@ def submit_data():
     }
     return data
 
+def get_resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.abspath(relative_path)
+
 # Browse for Excel File
 def browseFiles():
     global filePath, templatePath, sortTimeSheet, workbook, excel_app
@@ -33,7 +39,7 @@ def browseFiles():
     filePath = filedialog.askopenfilename(title="Select Excel File", filetypes=[("Excel files", "*.xlsx *.xls")])
 
     # Predefined Excel template
-    templatePath = os.path.abspath('Excel-Documents\\Sort_Time.xlsx')
+    templatePath = get_resource_path('Excel-Documents\\Sort_Time.xlsx')
 
     if not os.path.exists(templatePath):
         print(f"Template file not found at {templatePath}. Please check the path.")
@@ -78,7 +84,7 @@ def subButton():
         # Perform calculations on sortTimeSheet
         print("Starting calculations on sortTimeSheet...")
         CalcSortTime.calcSortTimes(sortTimeSheet, data['localSchTimes'], data['localActTimes'])
-        CalcSortTime.setRootCauseDelay(sortTimeSheet, ['10856', '924 116 of this was NCING'])
+        CalcSortTime.setRootCauseDelay(sortTimeSheet)
         CalcSortTime.outboundTruckRoutes(sortTimeSheet, data['outSchTimes'], data['outActTimes'])
         CalcSortTime.aircraftStrikeBox(sortTimeSheet)
         print("Calculations completed.")
